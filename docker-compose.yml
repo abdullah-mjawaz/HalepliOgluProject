@@ -1,0 +1,61 @@
+version : "3"
+services : 
+
+  nginx_server:
+    container_name: nginx_server
+    build: 
+      context: ./nginx
+    restart: always
+    ports:
+      - 3050:80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+
+  backend:
+    build : 
+      context: ./backend
+    volumes :
+      - ./backend:/app
+    command: >
+      sh -c " python manage.py wait_for_db &&
+              python manage.py migrate &&
+              python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=app
+      - DB_USER=postgres
+      - DB_PASS=postgres_password
+      - REDIS_URI=redis://redis:6379
+    depends_on:
+      - postgres_db
+      - redis
+    links:
+      - postgres_db:db
+      - redis
+    ports:
+      - "8000:8000"
+
+  postgres_db:
+    image: postgres:10-alpine
+    environment:
+      - POSTGRES_DB=app
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres_password
+
+  system_page: 
+    build: 
+      context: ./frontend/system-page
+    volumes :
+      - /app/node_modules
+      - ./frontend/system-page:/app
+ 
+  redis:
+    container_name: 'redis'
+    image: 'redis:latest'
+    command: redis-server
+    ports:
+      - '6378:6379'
+
+  
+
+  
