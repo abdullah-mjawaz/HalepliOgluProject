@@ -179,11 +179,9 @@ STATIC_URL = '/static/'
 
 
 #user configs
-
-AUTHENTICATION_BACKENDS = [#'accounts.backends.AuthenticationBackend',
+AUTHENTICATION_BACKENDS = ['accounts.backends.AuthenticationBackend',
                            'django.contrib.auth.backends.ModelBackend']
-
-#AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'accounts.User'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = 'none'
